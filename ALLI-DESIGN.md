@@ -1,0 +1,7 @@
+# Alli — mascote chibi
+
+Arte criada com o modo integrado imagegen, fundo transparente. Arquivo final: alli-chibi.png; versão usada no app: public/alli/mascot-chibi.png.
+
+## Prompt final
+
+Use case: stylized-concept. Create a NEW simple CHIBI MASCOT named Alli for a social taste museum. It must read as a compact iconic mascot, NOT an anime teenager or a detailed human illustration. Extremely cute tiny fantasy imp: huge rounded head taking 65% of total height, tiny bean-shaped body, short stubby limbs, two tiny cream horns, round plum-purple face, two simple golden oval eyes, tiny curved smile, tiny curled tail. No human nose, no elaborate hair, no muscles, no long legs, no detailed anatomy. A single simple teal hood/scarf and small sand-colored vest with just one small golden geometric star motif provide a subtle Arab-inspired textile design; no religious symbols, no ethnic caricature. Three or four flat colors: muted plum, dark indigo outline, teal, warm cream/gold. Flat vector-like sticker illustration, bold clean rounded outline, minimal shading, no texture, no intricate embroidery, no ornate jewelry. Full body centered, seated with tiny feet, holding a small black vinyl record with a gold center. Strong simple silhouette, readable at 48 pixels as a profile avatar. Friendly mischievous little creature, gender-neutral, playful. Plenty of transparent margin around the entire character. Actual transparent background, no text, no words, no watermark.

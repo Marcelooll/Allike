@@ -1,3 +1,4 @@
+import {ensureAlli} from './demo';
 import {env} from 'cloudflare:workers';
 import {getChatGPTUser} from '@/app/chatgpt-auth';
 import {safeUrl,type Entry} from './catalog';
@@ -5,7 +6,7 @@ export class HttpError extends Error{constructor(public status:number,message:st
 export const config=()=>env as unknown as Record<string,string>;
 export function database(){if(!env.DB)throw new HttpError(503,'Banco de dados indisponível.');return env.DB;}
 export async function identity(){const u=await getChatGPTUser();if(!u)throw new HttpError(401,'Entre para abrir seu museu.');return u;}
-export async function profile(){const user=await identity();const db=database();await db.prepare('INSERT OR IGNORE INTO profiles (id,name,handle,created) VALUES (?,?,?,?)').bind(user.userId,user.fullName||'Meu museu','museu-'+(await digest(user.userId)).slice(0,12).toLowerCase(),Date.now()).run();return {user,record:await db.prepare('SELECT * FROM profiles WHERE id=?').bind(user.userId).first()};}
+export async function profile(){const user=await identity();await ensureAlli();const db=database();await db.prepare('INSERT OR IGNORE INTO profiles (id,name,handle,created) VALUES (?,?,?,?)').bind(user.userId,user.fullName||'Meu museu','museu-'+(await digest(user.userId)).slice(0,12).toLowerCase(),Date.now()).run();return {user,record:await db.prepare('SELECT * FROM profiles WHERE id=?').bind(user.userId).first()};}
 export async function jsonBody(req:Request){if(req.headers.get('origin')&&req.headers.get('origin')!==new URL(req.url).origin)throw new HttpError(403,'Origem inválida.');const text=await req.text();if(text.length>20000)throw new HttpError(413,'Conteúdo muito grande.');try{return JSON.parse(text);}catch{throw new HttpError(400,'Dados inválidos.');}}
 export function value(v:unknown,max:number,required=false){if(typeof v!=='string'||v.length>max||(required&&!v.trim()))throw new HttpError(400,'Verifique os campos e o limite de caracteres.');return v.trim();}
 export const bytes=(s:string)=>new TextEncoder().encode(s);

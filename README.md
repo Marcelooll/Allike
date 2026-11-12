@@ -1,6 +1,6 @@
 # Allike — museu pessoal de gostos
 
-Aplicativo full-stack em português: perfil, filmes/reviews, música, jogos, conquistas, mural, busca de perfis e personalização. Feed e recomendação por likes/dislikes ficam fora da versão 1 conforme o escopo.
+Aplicativo full-stack em português: perfil, filmes/reviews, música, jogos, conquistas, mural, busca de perfis e personalização. Esta atualização inclui o perfil demonstrativo Alli, feed cronológico e relações de seguir. Recomendações por likes/dislikes continuam fora do escopo.
 
 ## Executar
 
@@ -10,6 +10,7 @@ Requer Node.js 22.13+ e npm. Na pasta do projeto:
 npm ci
 npm run build
 node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_square_loa.sql
+node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0001_wakeful_jazinda.sql
 npm run dev
 ```
 
@@ -67,6 +68,7 @@ Itens usam identificadores estáveis por usuário/serviço, preservando a fixaç
 npm test
 node node_modules/typescript/bin/tsc --noEmit
 npm run test:api
+node tests/social-smoke.mjs
 ```
 
 O teste de API usa exclusivamente localhost e o usuário de desenvolvimento. Com `TEST_LIVE_RSS=1`, também importa temporariamente o RSS público do perfil jack para verificar a integração e remove os dados ao terminar. Não usa dados de teste em produção.
@@ -80,3 +82,13 @@ Verificações realizadas: testes de RSS/URLs, autenticação, validação, bloq
 - https://letterboxd.com/api-beta/
 - https://www.last.fm/api/show/user.getRecentTracks
 - https://developer.spotify.com/documentation/web-api/tutorials/code-pkce-flow
+
+## Alli e recursos sociais
+
+Abra `/?profile=alli` para visitar o mascote chibi e `/?view=feed` para o feed. O perfil é criado automaticamente no primeiro acesso autenticado: 15 obras originais fictícias, quatro conexões simuladas, conquistas e reviews inventados. Não são contas de serviços externos nem chamadas às APIs.
+
+Siga o Alli para suas atividades aparecerem na aba Seguindo. O botão Simular atividade cria uma nova entrada demonstrativa, com intervalo mínimo de cinco segundos. O feed é cronológico, paginado e atualiza a cada 30 segundos enquanto visível. Seguidores, seguindo e comentários persistem no banco; nenhum seguidor é inventado.
+
+Em Sala livre, use Ver e copiar CSS para inspecionar o tema Arquivo noturno e aplicá-lo ao próprio perfil. O CSS exportado está em alli-sala-livre.css. A personalização é isolada em iframe sem scripts.
+
+Testes sociais cobrem idempotência do perfil, seguir/deixar de seguir, feed filtrado, atividade simulada, validação e proteção contra edição do museu alheio.
