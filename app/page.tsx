@@ -1,0 +1,1 @@
+import Museum from './museum'; export default function Home(){return <Museum/>;}
