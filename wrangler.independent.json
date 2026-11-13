@@ -15,7 +15,7 @@
     {
       "binding": "DB",
       "database_name": "allike-db",
-      "database_id": "00000000-0000-4000-8000-000000000000",
+      "database_id": "be8f3aa6-85ed-446e-af19-e6516584a5ab",
       "migrations_dir": "drizzle"
     }
   ]
