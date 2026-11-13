@@ -1,0 +1,85 @@
+{
+  "verified": "2026-11-12",
+  "notice": "Capas e fotografias pertencem aos respectivos titulares. Catálogo ilustrativo; opiniões e atividades são do personagem.",
+  "sources": [
+    {
+      "title": "A Montanha Sagrada",
+      "source": "https://letterboxd.com/film/the-holy-mountain/",
+      "image": "https://a.ltrbxd.com/resized/film-poster/4/7/8/0/5/47805-the-holy-mountain-0-600-0-900-crop.jpg?v=d7002e900e"
+    },
+    {
+      "title": "Häxan",
+      "source": "https://letterboxd.com/film/haxan/",
+      "image": "https://a.ltrbxd.com/resized/film-poster/8/8/7/1/8871-haxan-0-600-0-900-crop.jpg?v=cd0cff7624"
+    },
+    {
+      "title": "Suspiria",
+      "source": "https://letterboxd.com/film/suspiria/",
+      "image": "https://a.ltrbxd.com/resized/film-poster/4/4/9/0/0/44900-suspiria-0-600-0-900-crop.jpg?v=d1fbb1d377"
+    },
+    {
+      "title": "A Bruxa",
+      "source": "https://letterboxd.com/film/the-witch-2015/",
+      "image": "https://a.ltrbxd.com/resized/sm/upload/y2/i8/9s/h1/tNr2KYytArZNSh0K8PUcHU3JnX4-0-600-0-900-crop.jpg?v=45f739a242"
+    },
+    {
+      "title": "The Host of Seraphim (Remastered)",
+      "source": "https://music.apple.com/us/album/the-host-of-seraphim-remastered/277714337?i=277714355&uo=4",
+      "image": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/7d/67/2b/7d672b18-110b-13a9-e993-f93bc210bfa4/652637270945.png/600x600bb.jpg"
+    },
+    {
+      "title": "Persephone",
+      "source": "https://music.apple.com/us/album/persephone/1027469081?i=1027469233&uo=4",
+      "image": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/88/93/da/8893da24-c559-a08a-b750-07185eb9960a/652637041200.png/600x600bb.jpg"
+    },
+    {
+      "title": "Feral Love",
+      "source": "https://music.apple.com/us/album/feral-love/1808567966?i=1808567968&uo=4",
+      "image": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/54/10/0e/54100e83-fd00-92bb-5912-d59d21a3fb68/114040.jpg/600x600bb.jpg"
+    },
+    {
+      "title": "Love You to Death",
+      "source": "https://music.apple.com/us/album/love-you-to-death/214478798?i=214478893&uo=4",
+      "image": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/d0/df/8c/d0df8ce9-c21f-7c31-b1e6-1bc84003495a/mzi.zuajwfip.jpg/600x600bb.jpg"
+    },
+    {
+      "title": "Dead Can Dance",
+      "source": "https://www.last.fm/music/Dead%20Can%20Dance",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Dead_Can_Dance9.jpg",
+      "imageSource": "https://commons.wikimedia.org/wiki/File:Dead_Can_Dance9.jpg",
+      "author": "Lino Brunetti",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/"
+    },
+    {
+      "title": "Cult of the Lamb",
+      "source": "https://store.steampowered.com/app/1313140/",
+      "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1313140/19f32bb477a6e9d058e05193b4e282149bd70644/header.jpg?t=1786554901"
+    },
+    {
+      "title": "First Follower",
+      "source": "https://store.steampowered.com/app/1313140/",
+      "image": "https://shared.akamai.steamstatic.com/community_assets/images/apps/1313140/f42d9991342c1ad552580665629f0a56e42db8df.jpg"
+    },
+    {
+      "title": "Blasphemous",
+      "source": "https://store.steampowered.com/app/774361/",
+      "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/774361/header.jpg?t=1780479368"
+    },
+    {
+      "title": "A Long Path Ahead",
+      "source": "https://store.steampowered.com/app/774361/",
+      "image": "https://shared.akamai.steamstatic.com/community_assets/images/apps/774361/4f8a760711889db41b77da1ff85834a7312258c7.jpg"
+    },
+    {
+      "title": "Hollow Knight",
+      "source": "https://store.steampowered.com/app/367520/",
+      "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/3c3489495136b26b34f8a9543c7f5645b99d388c/header.jpg?t=1776125684"
+    },
+    {
+      "title": "Charmed",
+      "source": "https://store.steampowered.com/app/367520/",
+      "image": "https://shared.akamai.steamstatic.com/community_assets/images/apps/367520/6d15e62c48ba57d23e72b8f24fb775a44223cb8f.jpg"
+    }
+  ]
+}

@@ -5,8 +5,8 @@ async function api(path,body,method=body?'POST':'GET'){const r=await fetch(base+
 let checks=0;function check(name,fn){fn();checks++;console.log('PASS '+name);}
 const me=(await api('museum')).data;const initial=(await api('museum?profile=alli')).data;const wasFollowing=!!initial.social.isFollowing;
 check('Alli identificado como demonstração',()=>{assert.equal(initial.profile.is_demo,1);assert.equal(initial.profile.avatar,'/alli/mascot-chibi.png');assert.equal(initial.own,false);});
-check('quatro contas explicitamente simuladas',()=>{assert.equal(initial.connections.length,4);assert.ok(initial.connections.every(c=>c.simulated===1));});
-check('coleções, conquistas e CSS personalizados',()=>{assert.ok(initial.items.length>=15);assert.ok(initial.items.some(i=>i.kind==='achievement'));assert.ok(initial.profile.css.includes('ARQUIVO NOTURNO'));assert.ok(initial.items.every(i=>!i.url));});
+check('três contas explicitamente simuladas',()=>{assert.equal(initial.connections.length,3);assert.ok(initial.connections.every(c=>c.simulated===1));});
+check('coleções, conquistas e CSS personalizados',()=>{assert.ok(initial.items.length>=15);assert.ok(initial.items.some(i=>i.kind==='achievement'));assert.ok(initial.profile.css.includes('ARQUIVO NOTURNO'));assert.ok(initial.items.every(i=>i.url.startsWith('https://')));assert.ok(initial.items.every(i=>i.image.startsWith('/alli/real/')));assert.ok(initial.items.some(i=>i.title==='Cult of the Lamb'));assert.ok(initial.items.some(i=>i.title==='A Montanha Sagrada'));assert.ok(initial.items.every(i=>i.provider!=='spotify'));});
 const again=(await api('museum?profile=alli')).data;check('inicialização idempotente',()=>assert.equal(again.items.length,initial.items.length));
 try{
  await api('follow',{target:'demo:alli',following:false});let feed=(await api('feed?scope=following')).data;check('perfil não seguido não aparece no feed Seguindo',()=>assert.ok(feed.items.every(i=>i.owner!=='demo:alli')));
