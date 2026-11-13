@@ -11,6 +11,7 @@ npm ci
 npm run build
 node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_square_loa.sql
 node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0001_wakeful_jazinda.sql
+node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0002_giant_zaladane.sql
 npm run dev
 ```
 
@@ -92,3 +93,11 @@ Siga o Alli para suas atividades aparecerem na aba Seguindo. O botão Simular at
 Em Sala livre, use Ver e copiar CSS para inspecionar o tema Arquivo noturno e aplicá-lo ao próprio perfil. O CSS exportado está em alli-sala-livre.css. A personalização é isolada em iframe sem scripts.
 
 Testes sociais cobrem idempotência do perfil, seguir/deixar de seguir, feed filtrado, atividade simulada, validação e proteção contra edição do museu alheio.
+
+## Contas, chat e comentários
+
+Acesse /?view=account para cadastro/login e /?view=chat para mensagens. O cadastro por e-mail está preparado, mas depende de um projeto Supabase: veja CONFIGURAR-CONTA-GRATUITA.md. O login ChatGPT foi preservado até a ativação. A audiência do Site permanece privada.
+
+Chat entre pessoas reais com persistência D1, indicador de leitura, histórico paginado, prevenção de envio duplicado e consulta a cada cinco segundos. Mural também busca novos comentários a cada cinco segundos quando aberto. Nenhum perfil de QA é publicado.
+
+Testes adicionais: node --test tests/account.test.mjs (provedor simulado, sem e-mail real) e node tests/chat-smoke.mjs (somente localhost, dados temporários removidos ao finalizar).

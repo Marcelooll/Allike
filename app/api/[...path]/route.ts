@@ -1,3 +1,5 @@
+import {accountRoute} from '@/lib/account';
+import {messagesRoute} from '@/lib/messages';
 import {database,profile,identity,jsonBody,value,HttpError,config,external,encrypt,digest,b64} from '@/lib/server';
 import {syncOne} from '@/lib/sync';
 import {providers} from '@/lib/catalog';
@@ -5,6 +7,9 @@ import {ALLI_ID,demoCatalog} from '@/lib/demo';
 export const dynamic='force-dynamic';
 const reply=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 async function route(req:Request){const url=new URL(req.url);const path=url.pathname.slice(5);const db=database();
+ if(path.startsWith('auth/'))return accountRoute(req,path);
+ if(path==='messages')return messagesRoute(req);
+ if(req.method==='GET'&&path==='comments'){await profile();const owner=url.searchParams.get('owner')||'';return reply((await db.prepare('SELECT c.*,p.name,p.handle FROM comments c JOIN profiles p ON p.id=c.author WHERE c.owner=? ORDER BY c.created DESC LIMIT 100').bind(owner).all()).results);}
  if(req.method==='GET'&&path==='health')return reply({ok:true});
  if(req.method==='GET'&&path==='museum'){
  const me=await profile();const handle=url.searchParams.get('profile');const p=handle?await db.prepare('SELECT * FROM profiles WHERE handle=?').bind(handle).first():me.record;if(!p)throw new HttpError(404,'Museu não encontrado.');const owner=p.id;const own=owner===me.user.userId;
@@ -12,7 +17,7 @@ async function route(req:Request){const url=new URL(req.url);const path=url.path
  const social=await db.prepare('SELECT (SELECT COUNT(*) FROM follows WHERE following=?) AS followers,(SELECT COUNT(*) FROM follows WHERE follower=?) AS following,(SELECT COUNT(*) FROM follows WHERE follower=? AND following=?) AS isFollowing').bind(owner,owner,me.user.userId,owner).first();
  return reply({profile:p,viewerProfile:me.record,social,own,viewer:me.user.userId,connections:connections.results,items:items.results,comments:comments.results,configured:{steam:!!config().STEAM_API_KEY,lastfm:!!config().LASTFM_API_KEY,letterboxd:true,spotify:!!config().SPOTIFY_CLIENT_ID&&!!config().TOKEN_SECRET},counts:await db.prepare('SELECT kind,COUNT(*) AS count FROM items WHERE owner=? GROUP BY kind').bind(owner).all().then(x=>x.results)});
  }
- if(req.method==='GET'&&path==='search'){await profile();const q=(url.searchParams.get('q')||'').slice(0,60);return reply((await db.prepare('SELECT name,handle,bio,accent,avatar,is_demo FROM profiles WHERE name LIKE ? OR handle LIKE ? ORDER BY is_demo DESC,created DESC LIMIT 20').bind('%'+q+'%','%'+q+'%').all()).results);}
+ if(req.method==='GET'&&path==='search'){await profile();const q=(url.searchParams.get('q')||'').slice(0,60);return reply((await db.prepare('SELECT id,name,handle,bio,accent,avatar,is_demo FROM profiles WHERE name LIKE ? OR handle LIKE ? ORDER BY is_demo DESC,created DESC LIMIT 20').bind('%'+q+'%','%'+q+'%').all()).results);}
  if(req.method==='GET'&&path==='social'){
  const me=await profile();const handle=url.searchParams.get('profile')||String(me.record?.handle);const p=await db.prepare('SELECT id FROM profiles WHERE handle=?').bind(handle).first();if(!p)throw new HttpError(404,'Museu não encontrado.');
  const type=url.searchParams.get('type')==='followers'?'followers':'following';const offset=Math.max(0,Math.min(10000,Number(url.searchParams.get('offset'))||0));const match=type==='followers'?'f.follower':'f.following';const predicate=type==='followers'?'f.following':'f.follower';
