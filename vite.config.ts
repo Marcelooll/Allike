@@ -43,6 +43,17 @@ export default defineConfig(async ({ command }) => {
   // Wrangler snapshots its log path while the Cloudflare plugin is imported.
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
+  if (process.env.ALLIKE_TARGET === 'independent') {
+    return {
+      plugins: [vinext(), cloudflare({
+        configPath: './wrangler.independent.json',
+        persistState: {path: '.wrangler/independent'},
+        viteEnvironment: {name: 'rsc', childEnvironments: ['ssr']},
+        inspectorPort: false,
+      })],
+    };
+  }
+
   return {
     server: {
       ...(managedLinux

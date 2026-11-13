@@ -2,7 +2,11 @@
 
 Aplicativo full-stack em português: perfil, filmes/reviews, música, jogos, conquistas, mural, busca de perfis e personalização. Esta atualização inclui o perfil demonstrativo Alli, feed cronológico e relações de seguir. Recomendações por likes/dislikes continuam fora do escopo.
 
-## Executar
+## Hospedagem independente
+
+O Allike já tem configuração separada para Cloudflare Workers + D1 na sua própria conta, com migrações versionadas. Veja [o guia de publicação no GitHub e Cloudflare](docs/PUBLICAR-GITHUB-CLOUDFLARE.md). Use `npm run db:migrate:local` e `npm run dev:independent` para testar em banco separado na porta 5174. O modo independente aceita somente autenticação própria e remove cabeçalhos de identidade externos.
+
+## Executar no ambiente Sites original
 
 Requer Node.js 22.13+ e npm. Na pasta do projeto:
 
@@ -89,7 +93,7 @@ Testes sociais cobrem idempotência do perfil, seguir/deixar de seguir, feed fil
 
 ## Contas, chat e comentários
 
-Acesse /?view=account para cadastro/login e /?view=chat para mensagens. O cadastro por e-mail está preparado, mas depende de um projeto Supabase: veja CONFIGURAR-CONTA-GRATUITA.md. O login ChatGPT foi preservado até a ativação. A audiência do Site permanece privada.
+Acesse /?view=account para cadastro/login e /?view=chat para mensagens. O cadastro por e-mail está preparado, mas depende de um projeto Supabase: veja CONFIGURAR-CONTA-GRATUITA.md. O modo administrativo já permite login e logout locais. O login ChatGPT pertence somente ao destino Sites. A audiência do Site permanece privada.
 
 Chat entre pessoas reais com persistência D1, indicador de leitura, histórico paginado, prevenção de envio duplicado e consulta a cada cinco segundos. Mural também busca novos comentários a cada cinco segundos quando aberto. Nenhum perfil de QA é publicado.
 

@@ -45,3 +45,10 @@ yarn-error.log*
 .DS_Store
 
 !.env.example
+
+# Database exports and local screenshots
+/backups/
+*.sqlite
+*.sqlite-*
+*.db
+*-preview.png

@@ -13,7 +13,14 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "test": "node --test tests/catalog.test.mjs",
-    "test:api": "node tests/api-smoke.mjs"
+    "test:api": "node tests/api-smoke.mjs",
+    "dev:independent": "node scripts/run-independent.mjs dev",
+    "build:independent": "node scripts/run-independent.mjs build",
+    "db:migrate:local": "node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 migrations apply DB --local --config wrangler.independent.json --persist-to .wrangler/independent",
+    "db:migrate:remote": "node scripts/independent-deploy.mjs migrate",
+    "deploy:independent": "node scripts/independent-deploy.mjs deploy",
+    "check": "tsc --noEmit",
+    "test:unit": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

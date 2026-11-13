@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export type ChatGPTUser = {
+  role?: 'admin'|'member';
   userId: string;
   displayName: string;
   email: string;
