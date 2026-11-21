@@ -30,6 +30,7 @@
 .account-native-out{display:block;margin-top:12px;font-size:11px;color:#cbb6df;text-decoration:underline}
 
 /* Account and discovery: readable controls, responsive cards and explicit feedback. */
+.account-signup{margin:20px 0}.account-signup .button{font-size:1rem;min-height:44px;white-space:normal}.account-signup small{display:block;margin-top:8px;text-align:center}
 .account-form label,.account-form input:not([type=checkbox]),.account-form fieldset>p{font-size:1rem}
 .account-form small,.account-form .session-help,.account-links button,.account-footer{font-size:.875rem;line-height:1.6}
 .account-actions,.assistant-actions{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
