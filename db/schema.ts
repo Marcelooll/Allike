@@ -1,5 +1,6 @@
+import {sql} from 'drizzle-orm';
 
-import {sqliteTable,text,integer,primaryKey,index} from 'drizzle-orm/sqlite-core';
+import {sqliteTable,text,integer,primaryKey,index,check} from 'drizzle-orm/sqlite-core';
 export const profiles=sqliteTable('profiles',{id:text('id').primaryKey(),name:text('name').notNull(),handle:text('handle').notNull().unique(),bio:text('bio').notNull().default(''),tags:text('tags').notNull().default(''),accent:text('accent').notNull().default('#b9a0f5'),theme:text('theme').notNull().default('midnight'),css:text('css').notNull().default(''),created:integer('created').notNull(),avatar:text('avatar').notNull().default(''),isDemo:integer('is_demo').notNull().default(0)});
 export const connections=sqliteTable('connections',{owner:text('owner').notNull(),provider:text('provider').notNull(),account:text('account').notNull(),token:text('token'),lastSync:integer('last_sync').notNull().default(0),attempted:integer('attempted').notNull().default(0),error:text('error'),cursor:integer('cursor').notNull().default(0),simulated:integer('simulated').notNull().default(0)},t=>[primaryKey({columns:[t.owner,t.provider]})]);
 export const items=sqliteTable('items',{id:text('id').notNull(),owner:text('owner').notNull(),provider:text('provider').notNull(),kind:text('kind').notNull(),title:text('title').notNull(),subtitle:text('subtitle').notNull().default(''),image:text('image').notNull().default(''),url:text('url').notNull().default(''),body:text('body').notNull().default(''),date:integer('date').notNull(),score:text('score').notNull().default(''),pinned:integer('pinned').notNull().default(0)},t=>[primaryKey({columns:[t.owner,t.provider,t.id]})]);
@@ -9,5 +10,7 @@ export const oauth=sqliteTable('oauth',{id:text('id').primaryKey(),owner:text('o
 export const follows=sqliteTable('follows',{follower:text('follower').notNull(),following:text('following').notNull(),created:integer('created').notNull()},t=>[primaryKey({columns:[t.follower,t.following]})]);
 
 export const messages=sqliteTable('messages',{id:text('id').primaryKey(),sender:text('sender').notNull(),recipient:text('recipient').notNull(),body:text('body').notNull(),created:integer('created').notNull(),readAt:integer('read_at')},t=>[index('messages_sender_created').on(t.sender,t.created),index('messages_recipient_created').on(t.recipient,t.created)]);
-export const authSessions=sqliteTable('auth_sessions',{id:text('id').primaryKey(),tokens:text('tokens').notNull(),expires:integer('expires').notNull(),accessExpires:integer('access_expires').notNull()});
+export const authSessions=sqliteTable('auth_sessions',{id:text('id').primaryKey(),tokens:text('tokens').notNull(),expires:integer('expires').notNull(),accessExpires:integer('access_expires').notNull(),userId:text('user_id').notNull().default('')},t=>[index('auth_sessions_user').on(t.userId)]);
 export const authLimits=sqliteTable('auth_limits',{id:text('id').primaryKey(),count:integer('count').notNull(),expires:integer('expires').notNull()});
+
+export const discoveryFeedback=sqliteTable('discovery_feedback',{owner:text('owner').notNull(),target:text('target').notNull(),interest:integer('interest').notNull(),created:integer('created').notNull()},t=>[primaryKey({columns:[t.owner,t.target]}),check('discovery_feedback_interest',sql`${t.interest} IN (-1,1)`)]);

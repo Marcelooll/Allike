@@ -47,6 +47,7 @@ export default defineConfig(async ({ command }) => {
     return {
       plugins: [vinext(), cloudflare({
         configPath: './wrangler.independent.json',
+        remoteBindings: process.env.ALLIKE_LOCAL_OFFLINE !== '1',
         persistState: {path: '.wrangler/independent'},
         viteEnvironment: {name: 'rsc', childEnvironments: ['ssr']},
         inspectorPort: false,

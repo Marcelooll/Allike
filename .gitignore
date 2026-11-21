@@ -52,3 +52,16 @@ yarn-error.log*
 *.sqlite-*
 *.db
 *-preview.png
+
+# Python environments (not required by this Node.js application)
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Local certificates and editor/OS state
+*.p12
+*.pfx
+Thumbs.db
+
+*-preview.jpg

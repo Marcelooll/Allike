@@ -1,4 +1,5 @@
 import {accountRoute} from '@/lib/account';
+import {assistantRoute} from '@/lib/assistant';
 import {messagesRoute} from '@/lib/messages';
 import {database,profile,identity,jsonBody,value,HttpError,config,external} from '@/lib/server';
 import {syncOne} from '@/lib/sync';
@@ -8,6 +9,15 @@ export const dynamic='force-dynamic';
 const reply=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 async function route(req:Request){const url=new URL(req.url);const path=url.pathname.slice(5);const db=database();
  if(path.startsWith('auth/'))return accountRoute(req,path);
+ if(path.startsWith('assistant/')||path==='discovery'||path==='discovery/feedback')return assistantRoute(req,path);
+ if(req.method==='GET'&&path==='account/export'){
+  const me=await profile();
+  const tables=[['items','owner'],['comments','author'],['follows','follower'],['discovery_feedback','owner']] as const;
+  const collections:Record<string,unknown>={};const truncated:string[]=[];
+  for(const [table,column] of tables){const rows=await db.prepare('SELECT * FROM '+table+' WHERE '+column+'=? LIMIT 5001').bind(me.user.userId).all();collections[table]=rows.results.slice(0,5000);if(rows.results.length>5000)truncated.push(table);}
+  const connections=await db.prepare('SELECT provider,account,last_sync,error FROM connections WHERE owner=?').bind(me.user.userId).all();
+  return Response.json({exportedAt:new Date().toISOString(),profile:me.record,connections:connections.results,...collections,truncated,note:'Exportação do museu: até 5.000 registros por categoria. Mensagens privadas, sessões e credenciais não fazem parte deste arquivo.'},{headers:{'Cache-Control':'no-store','Content-Disposition':'attachment; filename="allike-meu-museu.json"'}});
+ }
  if(path==='messages')return messagesRoute(req);
  if(req.method==='GET'&&path==='comments'){await profile();const owner=url.searchParams.get('owner')||'';return reply((await db.prepare('SELECT c.*,p.name,p.handle FROM comments c JOIN profiles p ON p.id=c.author WHERE c.owner=? ORDER BY c.created DESC LIMIT 100').bind(owner).all()).results);}
  if(req.method==='GET'&&path==='health')return reply({ok:true});

@@ -8,7 +8,7 @@ import {pbkdf2Sync,randomBytes} from 'node:crypto';
 // Execute the real account route with an in-memory D1 adapter and a fake Auth service.
 // No credentials, emails, network or production data are used.
 test('Admin: password, sessions, logout and limits',async()=>{
- const sql=new DatabaseSync(':memory:');sql.exec('CREATE TABLE auth_sessions(id TEXT PRIMARY KEY,tokens TEXT,expires INTEGER,access_expires INTEGER);CREATE TABLE auth_limits(id TEXT PRIMARY KEY,count INTEGER,expires INTEGER)');
+ const sql=new DatabaseSync(':memory:');sql.exec('CREATE TABLE auth_sessions(id TEXT PRIMARY KEY,tokens TEXT,expires INTEGER,access_expires INTEGER,user_id TEXT NOT NULL DEFAULT "");CREATE TABLE auth_limits(id TEXT PRIMARY KEY,count INTEGER,expires INTEGER)');
  const database=()=>({prepare(query){let values=[];const obj={bind(...v){values=v;return obj;},async first(){return sql.prepare(query).get(...values)||null;},async run(){return sql.prepare(query).run(...values);}};return obj;},async batch(stmts){return Promise.all(stmts.map(s=>s.run()));}});
  class HttpError extends Error{constructor(status,message){super(message);this.status=status;}}
  const digest=async s=>Buffer.from(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s))).toString('base64url');

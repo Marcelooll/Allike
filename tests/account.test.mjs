@@ -7,7 +7,7 @@ import ts from 'typescript';
 // Execute the real account route with an in-memory D1 adapter and a fake Auth service.
 // No credentials, emails, network or production data are used.
 test('Supabase adapter: verification, session lifetime, renewal and revocation',async()=>{
- const sql=new DatabaseSync(':memory:');sql.exec('CREATE TABLE auth_sessions(id TEXT PRIMARY KEY,tokens TEXT,expires INTEGER,access_expires INTEGER);CREATE TABLE auth_limits(id TEXT PRIMARY KEY,count INTEGER,expires INTEGER)');
+ const sql=new DatabaseSync(':memory:');sql.exec('CREATE TABLE auth_sessions(id TEXT PRIMARY KEY,tokens TEXT,expires INTEGER,access_expires INTEGER,user_id TEXT NOT NULL DEFAULT "");CREATE TABLE auth_limits(id TEXT PRIMARY KEY,count INTEGER,expires INTEGER)');
  const database=()=>({prepare(query){let values=[];const obj={bind(...v){values=v;return obj;},async first(){return sql.prepare(query).get(...values)||null;},async run(){return sql.prepare(query).run(...values);}};return obj;},async batch(stmts){return Promise.all(stmts.map(s=>s.run()));}});
  class HttpError extends Error{constructor(status,message){super(message);this.status=status;}}
  const digest=async s=>Buffer.from(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s))).toString('base64url');
@@ -32,5 +32,40 @@ test('Supabase adapter: verification, session lifetime, renewal and revocation',
  await assert.rejects(accountRoute(request({...input,code:'abc'}),'auth/verify'),e=>e.status===400);
  await assert.rejects(accountRoute(request(input,{Origin:'https://evil.example'}),'auth/login'),e=>e.status===403);
  const fresh=await accountRoute(request(input),'auth/login');cookie=fresh.headers.get('set-cookie').split(';')[0];const logout=await accountRoute(request({}),'auth/logout');assert.match(logout.headers.get('set-cookie'),/Max-Age=0/);assert.equal(await accountIdentity(),null);
+
+ // Password recovery must require a recovery code, never signup verification or just an email.
+ sql.prepare('DELETE FROM auth_limits').run();
+ cookie='';
+ const before=await accountRoute(request(input),'auth/login');cookie=before.headers.get('set-cookie').split(';')[0];
+ sql.prepare('INSERT INTO auth_sessions(id,tokens,expires,access_expires,user_id) VALUES (?,?,?,?,?)').run('other-session','opaque',Date.now()+100000,Date.now()+100000,'supabase:other');
+ const previousFetch=globalThis.fetch;let consumed=false,failRecovery=false;
+ globalThis.fetch=async(url,init)=>{
+  const data=init.body?JSON.parse(init.body):{};
+  if(url.endsWith('/recover')&&failRecovery)return Response.json({error:'not found'},{status:400});
+  if(url.endsWith('/verify')&&data.type==='recovery'){
+   if(data.token!=='654321'||consumed)return Response.json({error:'invalid or expired'},{status:400});
+   consumed=true;
+  }
+  return previousFetch(url,init);
+ };
+ const recovery={email:input.email,code:'654321',password:'a new synthetic password',confirmPassword:'a new synthetic password'};
+ const existing=await accountRoute(request({email:input.email}),'auth/forgot');failRecovery=true;
+ const absent=await accountRoute(request({email:'missing@example.com'}),'auth/forgot');failRecovery=false;
+ assert.deepEqual(await existing.json(),await absent.json(),'do not enumerate registered emails');
+ await assert.rejects(accountRoute(request({...recovery,confirmPassword:'mismatch'}),'auth/reset'),e=>e.status===400);
+ await assert.rejects(accountRoute(request({...recovery,code:'123456'}),'auth/reset'),e=>e.status===400);
+ assert.equal(consumed,false);
+ await assert.rejects(accountRoute(request(recovery,{Origin:'https://evil.example'}),'auth/reset'),e=>e.status===403);
+ const reset=await accountRoute(request(recovery),'auth/reset');
+ assert.match(reset.headers.get('set-cookie'),/Max-Age=0/);
+ assert.equal(lastCall.init.method,'PUT');assert.equal(JSON.parse(lastCall.init.body).password,recovery.password);
+ assert.equal(sql.prepare('SELECT COUNT(*) n FROM auth_sessions WHERE user_id=?').get('supabase:test-user').n,0);
+ assert.equal(sql.prepare('SELECT COUNT(*) n FROM auth_sessions WHERE user_id=?').get('supabase:other').n,1);
+ assert.equal(await accountIdentity(),null);
+ await assert.rejects(accountRoute(request(recovery),'auth/reset'),e=>e.status===400,'recovery code cannot be replayed');
+ const newLogin=await accountRoute(request(input),'auth/login');cookie=newLogin.headers.get('set-cookie').split(';')[0];
+ const allOut=await accountRoute(request({}),'auth/logout-all');assert.match(allOut.headers.get('set-cookie'),/Max-Age=0/);assert.equal(await accountIdentity(),null);
+ await assert.rejects(accountRoute(request({}),'auth/logout-all'),e=>e.status===401);
+
  }finally{globalThis.fetch=realFetch;delete globalThis.__accountDeps;sql.close();}
 });

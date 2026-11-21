@@ -10,4 +10,4 @@ Para iniciar localmente: `node scripts/run-framework.mjs dev --hostname 127.0.0.
 
 Validação: `node --test tests/admin.test.mjs tests/account.test.mjs` e `node node_modules/typescript/bin/tsc --noEmit`.
 
-Publicação pendente: o conector retornou codex_auth, sem credencial compatível com o helper instalado; o Git remoto recusou autenticação. A versão pública anterior permanece inalterada. Para publicar esta versão, restaurar autenticação do repositório, enviar fonte, configurar as variáveis administrativas como segredos no Sites e publicar o mesmo commit.
+O destino independente está publicado em https://allike.marceloggamer27.workers.dev com login administrativo e D1 próprio. O destino Sites é separado. Para desenvolvimento independente, use `npm run db:migrate:local` e `npm run dev:independent` (porta 5174).

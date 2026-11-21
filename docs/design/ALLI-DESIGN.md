@@ -1,6 +1,6 @@
 # Alli — mascote chibi
 
-Arte criada com o modo integrado imagegen, fundo transparente. Arquivo final: alli-chibi.png; versão usada no app: public/alli/mascot-chibi.png.
+Arte criada com o modo integrado imagegen, fundo transparente. Arquivo final: alli-chibi.png; versão usada no app: ../../public/alli/mascot-chibi.png.
 
 ## Prompt final
 

@@ -4,7 +4,7 @@ O projeto tem dois destinos separados. Os comandos originais continuam atendendo
 
 ## GitHub
 
-Crie um repositório privado allike e envie o código com Git. Não faça upload indiscriminado da pasta pelo navegador: respeite o .gitignore. Não envie .dev.vars, .env, node_modules, .wrangler, .sites-runtime, dist nem backups. O histórico e o conteúdo devem ser revisados antes do push. A integração GitHub precisa estar conectada para o agente criar e enviar o repositório.
+O repositório público já existe em https://github.com/Marcelooll/Allike. Envie alterações revisadas com Git. Não faça upload indiscriminado da pasta pelo navegador: respeite o .gitignore. Não envie .dev.vars, .env, node_modules, .wrangler, .sites-runtime, dist nem backups. O histórico e o conteúdo devem ser revisados antes do push. A integração GitHub precisa estar conectada para o agente criar e enviar o repositório.
 
 ## Desenvolvimento independente
 
@@ -41,7 +41,7 @@ npx wrangler secret put ADMIN_PASSWORD_HASH --config wrangler.independent.json
 npx wrangler secret put TOKEN_SECRET --config wrangler.independent.json
 ~~~
 
-Cada comando pede o valor sem gravá-lo no código. Se o Worker ainda não existir, o Wrangler pode pedir para criá-lo. Use o hash e TOKEN_SECRET do .dev.vars original por entrada protegida, sem colar valores em issues, commits ou comandos de terminal. A senha em texto puro não deve ser colocada no hash. Formato esperado: pbkdf2-sha256$100000$SALT_BASE64URL$HASH_BASE64URL.
+Cada comando pede o valor sem gravá-lo no código. Se o Worker ainda não existir, o Wrangler pode pedir para criá-lo. Use o hash administrativo e um TOKEN_SECRET próprio para produção por entrada protegida, sem colar valores em issues, commits ou comandos de terminal. A senha em texto puro não deve ser colocada no hash. Formato esperado: pbkdf2-sha256$100000$SALT_BASE64URL$HASH_BASE64URL.
 
 Para cadastro de pessoas por e-mail, configure Supabase, altere AUTH_PROVIDER para supabase e adicione SUPABASE_URL e SUPABASE_PUBLISHABLE_KEY. A conta admin é um acesso individual de teste, não um cadastro multiusuário nem um painel de moderação.
 
@@ -73,4 +73,4 @@ Referências: https://developers.cloudflare.com/d1/reference/migrations/ e https
 
 ## Resultado da validação nesta entrega
 
-TypeScript, oito testes, criação do D1 local, reaplicação idempotente das migrações e build independente passaram. Login real, lembre-me, revogação por logout e 15 itens do Alli foram verificados pela API no banco novo. O dry-run final do Wrangler foi bloqueado por uma restrição de leitura de diretório ancestral no ambiente Windows; precisa ser repetido em um terminal com acesso normal ou no CI. Não houve publicação remota nem criação do banco remoto nesta etapa.
+TypeScript, oito testes, criação do D1 local, reaplicação idempotente das migrações e build independente passaram. Login real, lembre-me, revogação por logout e 15 itens do Alli foram verificados pela API no banco novo. O dry-run final do Wrangler foi bloqueado por uma restrição de leitura de diretório ancestral no ambiente Windows; precisa ser repetido em um terminal com acesso normal ou no CI. Posteriormente, o Worker allike e o banco allike-db foram publicados na conta do mantenedor pela API oficial da Cloudflare. O endereço https://allike.marceloggamer27.workers.dev foi validado com login, lembre-me, logout e o perfil Alli. A CI do GitHub passou. A publicação automática do GitHub ainda não está conectada.
