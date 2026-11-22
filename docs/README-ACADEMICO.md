@@ -142,3 +142,11 @@ Não afirme que escreveu ou compreendeu tudo se isso ainda não aconteceu. Siga 
 ## Atualização: IA e recuperação
 
 Leia [o guia de implementação](IA-E-RECUPERACAO.md). Explique a diferença entre pontuação por regras e geração por modelo. A recuperação exige código do provedor, não apenas saber o e-mail. Temas gerados passam por validação e confirmação antes de substituir o CSS.
+
+## Importação e exposição de dados culturais
+
+O componente Museum usa estado e efeitos do React para consultar /api/collection. Busca, categoria, ordenação e paginação são processadas no servidor, evitando esconder itens depois dos primeiros 120. O banco guarda as horas Steam em minutos; a interface converte o total para horas.
+
+Vincular identidade e obter dados são etapas distintas: Steam OpenID prova qual conta pertence à pessoa; a Web API importa jogos e conquistas com a chave do aplicativo. No Letterboxd, RSS mantém novidades e o parser CSV aceita campos entre aspas, vírgulas e reviews com múltiplas linhas para importar o histórico exportado. Upserts combinam o mesmo filme sem apagar notas, reviews ou fixações ao receber campos vazios.
+
+A visibilidade pública é uma opção no perfil. O servidor verifica essa opção antes de responder a visitantes anônimos; mensagens privadas e credenciais não entram nessa resposta. A personalização usa HTML gerado com texto escapado e CSS em iframe sandbox, impedindo a execução de scripts. Os testes usam SQLite em memória para verificar migrações, paginação, busca, privacidade e reimportação.

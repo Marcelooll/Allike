@@ -72,3 +72,13 @@ A CI do GitHub executa essas verificações. Ela **não publica automaticamente*
 - [Exemplo de personalização CSS](examples/themes/alli-sala-livre.css)
 
 A versão original do Sites é um destino separado. O endereço acima usa a conta Cloudflare do mantenedor e banco D1 próprio.
+
+### Coleções e visitas públicas
+
+Em Personalizar, “Permitir visitas sem login” torna o museu acessível pelo link. Nome, bio, interesses, coleção e CSS são públicos; chats, sessões e credenciais não são enviados aos visitantes. Comentários e interações exigem login.
+
+A Steam usa OpenID para vincular a identidade, mas a importação exige uma Steam Web API key do mantenedor. No painel Conexões → Steam, o administrador pode validar e salvar a chave criptografada no D1. TOKEN_SECRET deve permanecer estável para descriptografá-la. Jogos e horas são salvos primeiro; conquistas são consultadas em lotes de oito jogos com tempo registrado, continuando enquanto o museu estiver aberto. Detalhes de jogos e conquistas devem estar públicos na Steam.
+
+Letterboxd: o RSS traz registros recentes, não toda a lista de assistidos. Em Conexões → Letterboxd, importe watched.csv, ratings.csv, diary.csv e reviews.csv da exportação oficial (extraia o ZIP antes). Limites: 2 MB e 5.000 registros por arquivo, enviados em lotes de 200 linhas. Um cartão por filme combina nota e review recentes; reimportar preserva itens fixados. CSVs não contêm capas. O RSS continua atualizando novas entradas, mas registros antigos ausentes do RSS exigem outra exportação.
+
+A coleção usa paginação de 60 itens, pesquisa no servidor e ordenação de jogos por horas. O CSS fica isolado em iframe sem scripts, com prévia no perfil e exposição ampliada na Sala livre. Migração necessária: 0004_library_visibility.sql.
