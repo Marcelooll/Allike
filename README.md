@@ -82,3 +82,9 @@ A Steam usa OpenID para vincular a identidade, mas a importação exige uma Stea
 Letterboxd: o RSS traz registros recentes, não toda a lista de assistidos. Em Conexões → Letterboxd, importe watched.csv, ratings.csv, diary.csv e reviews.csv da exportação oficial (extraia o ZIP antes). Limites: 2 MB e 5.000 registros por arquivo, enviados em lotes de 200 linhas. Um cartão por filme combina nota e review recentes; reimportar preserva itens fixados. CSVs não contêm capas. O RSS continua atualizando novas entradas, mas registros antigos ausentes do RSS exigem outra exportação.
 
 A coleção usa paginação de 60 itens, pesquisa no servidor e ordenação de jogos por horas. O CSS fica isolado em iframe sem scripts, com prévia no perfil e exposição ampliada na Sala livre. Migração necessária: 0004_library_visibility.sql.
+
+### Leitura pública do Letterboxd
+
+A sincronização também consulta a página pública /films/, uma página por lote, lendo notas e curtidas e preservando o que já foi salvo se houver bloqueio ou mudança no HTML. Datas de visualização desconhecidas não são inventadas. O RSS segue responsável por novas entradas do diário/reviews. Essa leitura de HTML não é uma API oficial e pode deixar de funcionar; o painel informa disponibilidade parcial. Não resolve desafios, não usa cookies privados nem contorna bloqueios.
+
+A vitrine profile_favorites guarda favoritos observados no perfil público, com data de consulta. É uma captura explicitamente identificada, não uma sincronização automática dos quatro favoritos. Favoritos não são contados como filmes assistidos. Os arquivos pessoais observados para importação ficam em work/ (ignorado pelo Git); não são incluídos no código público.

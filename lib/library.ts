@@ -14,15 +14,16 @@ export async function resolveMuseum(req:Request){
 const reply=(data:unknown)=>Response.json(data,{headers:{'Cache-Control':'no-store'}});
 export async function museumResponse(req:Request){
  const {record:p,me,guest}=await resolveMuseum(req),db=database(),owner=p.id,viewer=me?.user.userId||'',own=owner===viewer;
- const [connections,items,comments,counts,social,stats]=await Promise.all([
+ const [connections,items,comments,counts,social,stats,favorites]=await Promise.all([
   db.prepare("SELECT c.provider,c.account,c.last_sync,c.error,c.notice,c.last_import_count,c.cursor,c.simulated,(SELECT COUNT(*) FROM items i WHERE i.owner=c.owner AND i.provider=c.provider) AS imported FROM connections c WHERE c.owner=? AND c.provider IN ('steam','letterboxd','lastfm')").bind(owner).all(),
   db.prepare("SELECT * FROM items WHERE owner=? AND provider IN ('steam','letterboxd','lastfm') ORDER BY pinned DESC,date DESC LIMIT 120").bind(owner).all(),
   guest?Promise.resolve({results:[]}):db.prepare('SELECT c.*,p.name,p.handle FROM comments c JOIN profiles p ON p.id=c.author WHERE c.owner=? ORDER BY c.created DESC LIMIT 100').bind(owner).all(),
   db.prepare("SELECT kind,COUNT(*) AS count FROM items WHERE owner=? AND provider IN ('steam','letterboxd','lastfm') GROUP BY kind").bind(owner).all(),
   db.prepare('SELECT (SELECT COUNT(*) FROM follows WHERE following=?) AS followers,(SELECT COUNT(*) FROM follows WHERE follower=?) AS following,(SELECT COUNT(*) FROM follows WHERE follower=? AND following=?) AS isFollowing').bind(owner,owner,viewer,owner).first(),
-  db.prepare("SELECT COALESCE(SUM(CASE WHEN kind='game' THEN CAST(score AS REAL) ELSE 0 END),0) AS minutes,COUNT(CASE WHEN kind='game' AND CAST(score AS REAL)>0 THEN 1 END) AS played FROM items WHERE owner=? AND provider='steam'").bind(owner).first()
+  db.prepare("SELECT COALESCE(SUM(CASE WHEN kind='game' THEN CAST(score AS REAL) ELSE 0 END),0) AS minutes,COUNT(CASE WHEN kind='game' AND CAST(score AS REAL)>0 THEN 1 END) AS played FROM items WHERE owner=? AND provider='steam'").bind(owner).first(),
+  db.prepare('SELECT provider,position,title,image,url,observed_at FROM profile_favorites WHERE owner=? ORDER BY provider,position').bind(owner).all()
  ]);
- return reply({profile:p,viewerProfile:me?.record||null,social,stats,own,guest,viewer,canConfigureServices:me?.user.role==='admin',connections:connections.results,items:items.results,comments:comments.results,counts:counts.results,configured:{steam:!!await serviceKey('steam'),lastfm:!!await serviceKey('lastfm'),letterboxd:true}});
+ return reply({favorites:favorites.results,profile:p,viewerProfile:me?.record||null,social,stats,own,guest,viewer,canConfigureServices:me?.user.role==='admin',connections:connections.results,items:items.results,comments:comments.results,counts:counts.results,configured:{steam:!!await serviceKey('steam'),lastfm:!!await serviceKey('lastfm'),letterboxd:true}});
 }
 export async function libraryRoute(req:Request,path:string){
  const db=database();

@@ -1,3 +1,4 @@
+import {parsePublicFilms} from './letterboxd-public';
 import {serviceKey} from './integrations';
 import {database,config,external,HttpError,saveEntries} from './server';
 import {parseLetterboxd,type Entry} from './catalog';
@@ -7,7 +8,16 @@ async function steam(method:string,params:Record<string,string>){const key=await
 async function lastfm(method:string,params:Record<string,string>){const api_key=await serviceKey('lastfm');if(!api_key)throw new HttpError(503,'Configure LASTFM_API_KEY no servidor para sincronizar músicas.');const data:any=await (await external('https://ws.audioscrobbler.com/2.0/?'+new URLSearchParams({method,api_key,format:'json',...params}))).json();if(data.error)throw new HttpError(502,'Last.fm: '+String(data.message));return data;}
 export async function syncOne(owner:string,provider:string){if(!['steam','lastfm','letterboxd'].includes(provider))throw new HttpError(400,'Serviço inválido.');const db=database();const c=await db.prepare('SELECT * FROM connections WHERE owner=? AND provider=?').bind(owner,provider).first<Connection>();if(!c)throw new HttpError(404,'Conta não conectada.');if(c.simulated)return {provider,simulated:true,skipped:true};const now=Date.now();const locked=await db.prepare('UPDATE connections SET attempted=? WHERE owner=? AND provider=? AND attempted<?').bind(now,owner,provider,now-60000).run();if(!locked.meta.changes)return {provider,skipped:true};let list:Entry[]=[];let more=false;let nextCursor=c.cursor;let notice:string|null=null;
  try{
- if(provider==='letterboxd'){const xml=await (await external('https://letterboxd.com/'+encodeURIComponent(c.account)+'/rss/')).text();if(!xml.includes('<rss'))throw new HttpError(502,'O Letterboxd não disponibilizou o RSS deste perfil.');list=parseLetterboxd(xml);if(!list.length)notice='O RSS deste perfil está vazio. Filmes apenas marcados como assistidos e notas sem diário podem não aparecer no RSS. Importe o histórico oficial em CSV para incluí-los.';}
+
+ if(provider==='letterboxd'){
+ const base='https://letterboxd.com/'+encodeURIComponent(c.account);const messages:string[]=[];let available=0;
+ try{const xml=await(await external(base+'/rss/')).text();if(!xml.includes('<rss'))throw Error('Invalid RSS');list=parseLetterboxd(xml);available++;if(!list.length)messages.push('Nenhuma entrada recente no RSS.');}catch{messages.push('O diário recente não ficou disponível nesta consulta.');}
+ const page=c.cursor>0?c.cursor:1;
+ try{const html=await(await external(base+'/films/'+(page>1?'page/'+page+'/':''))).text();const parsed=parsePublicFilms(html,c.account,page);list.push(...parsed.items);available++;more=parsed.hasNext;nextCursor=more?page+1:0;messages.push(parsed.items.length+' filmes consultados na página '+page+', com notas e curtidas públicas.');if(more)messages.push('O restante da coleção continua sendo importado enquanto o museu estiver aberto.');}catch{messages.push('A lista pública de filmes ficou indisponível; o histórico salvo foi preservado.');}
+ if(!available)throw new HttpError(502,'O Letterboxd não disponibilizou o RSS nem a lista pública de filmes. Tente novamente mais tarde.');
+ messages.push('Os quatro favoritos e reviews fora do RSS ainda não são importados por esta conexão.');
+ notice=messages.join(' ');
+ }
  if(provider==='lastfm'){
  const recent=await lastfm('user.getRecentTracks',{user:c.account,limit:'200',...(c.last_sync?{from:String(Math.floor(c.last_sync/1000)-60)}:{})});
  for(const t of recent.recenttracks?.track??[])if(t.date?.uts)list.push(entry('lastfm','music',t.date.uts+':'+t.name,t.name,{subtitle:t.artist?.['#text']||'',image:t.image?.at(-1)?.['#text']||'',url:t.url,date:Number(t.date.uts)*1000,body:t.album?.['#text']||''}));

@@ -12,6 +12,9 @@ async function moduleFile(file,deps={}){
 }
 test('CSV, persistence and public collection: real SQL, pagination and privacy',async()=>{
  const catalog=await moduleFile('catalog.ts');
+ const publicFilms=await moduleFile('letterboxd-public.ts',{plain:catalog.plain,safeUrl:catalog.safeUrl});
+ const markup='<title>Member films • Letterboxd</title><section class="poster-grid"><ul><li class="griditem"><div data-item-slug="donnie-darko" data-item-name="Donnie Darko (2001)"><img src="https://example.com/empty-poster.png"></div><span class="rated-8"></span><span class="liked-micro"></span></li></ul></section><a href="/member/films/page/2/">Next</a>';
+ const parsed=publicFilms.parsePublicFilms(markup,'member');assert.equal(parsed.items[0].title,'Donnie Darko');assert.equal(parsed.items[0].score,'4');assert.equal(parsed.items[0].liked,1);assert.equal(parsed.items[0].date,0);assert.equal(parsed.items[0].image,'');assert.equal(parsed.hasNext,true);assert.throws(()=>publicFilms.parsePublicFilms('<title>Just a moment...</title>','member'));
  const csv=await moduleFile('letterboxd-import.ts',{plain:catalog.plain});
  const header='Date,Name,Year,Letterboxd URI,Rating,Review\r\n';
  const sample=header+'2020-01-01,"Film, One",2000,https://letterboxd.com/film/one/,4.5,"A review, with ""quotes""\nand a newline"';
@@ -25,11 +28,11 @@ test('CSV, persistence and public collection: real SQL, pagination and privacy',
  try{
   db.prepare('INSERT INTO profiles(id,name,handle,created,is_public) VALUES(?,?,?,?,?)').run('owner','Owner','owner',1,1);
   db.prepare('INSERT INTO profiles(id,name,handle,created) VALUES(?,?,?,?)').run('private','Private','private',1);
-  await server.saveEntries('owner',films);
+  await server.saveEntries('owner',films.map(x=>({...x,liked:1})));
   db.prepare('UPDATE items SET pinned=1').run();
   await server.saveEntries('owner',[{...films[0],id:'rss-new',image:'https://example.com/poster.jpg',date:films[0].date+1,body:'',score:''}]);
   assert.equal(db.prepare('SELECT COUNT(*) n FROM items').get().n,1);
-  const saved=db.prepare('SELECT * FROM items').get();assert.equal(saved.pinned,1);assert.equal(saved.score,'4.5');assert.match(saved.body,/quotes/);assert.match(saved.image,/poster/);
+  const saved=db.prepare('SELECT * FROM items').get();assert.equal(saved.pinned,1);assert.equal(saved.liked,1);assert.equal(saved.score,'4.5');assert.match(saved.body,/quotes/);assert.match(saved.image,/poster/);
   await server.saveEntries('owner',Array.from({length:130},(_,n)=>({...films[0],id:String(n),provider:'steam',kind:'game',title:n===0?'100% complete':'Game '+n,score:String(n),url:'https://store.steampowered.com/app/'+n})));
   let user=null;
   const identity=async()=>{if(!user)throw new server.HttpError(401,'Login');return user;};

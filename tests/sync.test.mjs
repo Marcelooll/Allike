@@ -18,9 +18,9 @@ test('Steam/Last.fm: official response mapping and checkpoint after persistence'
  else throw Error('Unexpected endpoint '+url.pathname);
  return Response.json(data);
  };
- globalThis.__syncDeps={serviceKey:async p=>p==='steam'?'test-steam-key':'test-lastfm-key',database,config:()=>({STEAM_API_KEY:'test-steam-key',LASTFM_API_KEY:'test-lastfm-key'}),external:(url)=>fetch(url),HttpError,saveEntries:async(_,entries)=>{if(failSave)throw Error('storage failure');saved=entries;},parseLetterboxd:()=>[]};
+ globalThis.__syncDeps={parsePublicFilms:()=>({items:[],hasNext:false}),serviceKey:async p=>p==='steam'?'test-steam-key':'test-lastfm-key',database,config:()=>({STEAM_API_KEY:'test-steam-key',LASTFM_API_KEY:'test-lastfm-key'}),external:(url)=>fetch(url),HttpError,saveEntries:async(_,entries)=>{if(failSave)throw Error('storage failure');saved=entries;},parseLetterboxd:()=>[]};
  const source=readFileSync(new URL('../lib/sync.ts',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'').replaceAll('import.meta.env.DEV','false');
- const compiled=ts.transpileModule('const {serviceKey,database,config,external,HttpError,saveEntries,parseLetterboxd}=globalThis.__syncDeps;\n'+source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText;
+ const compiled=ts.transpileModule('const {parsePublicFilms,serviceKey,database,config,external,HttpError,saveEntries,parseLetterboxd}=globalThis.__syncDeps;\n'+source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText;
  try{
  const {syncOne}=await import('data:text/javascript;base64,'+Buffer.from(compiled).toString('base64'));
  for(const p of ['steam','lastfm'])db.prepare('INSERT INTO connections(owner,provider,account,token,last_sync,attempted,cursor,simulated,error) VALUES (?,?,?,NULL,0,0,0,0,NULL)').run('test',p,p==='steam'?'76561198000000000':'test');
